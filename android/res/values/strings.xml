@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">VBot</string>
+    
+    <string name="txtStatusOnline">Bot Status: <strong>Connected</strong></string>
+    <string name="txtStatusOffline">Bot Status: <strong>Not Connected</strong></string>
+    
+    <string name="btnForward">Forward</string>
+    <string name="btnBackward">Backward</string>
+    <string name="btnLeft">Left</string>
+    <string name="btnRight">Right</string>
+    <string name="btnStretch">Stretch</string>
+    <string name="btnDance">Lets dance!</string>
+    
+    <string name="txtDetails">More info at: <a href="http://blog.varunkumar.me">http://blog.varunkumar.me</a></string>
+</resources>

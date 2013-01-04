@@ -1,5 +1,9 @@
 #include <Servo.h>
 #include <IRremote.h>
+#include <Max3421e.h>
+#include <Usb.h>
+#include <AndroidAccessory.h>
+
 #include "angles.h"
 #include "ir_data.h"
 #include "pins.h"
@@ -8,6 +12,17 @@ Servo servo[8];
 
 IRrecv irrecv(RECV_PIN);
 decode_results results;
+
+int msg_len = 0;
+byte msg[1];
+
+AndroidAccessory acc("Google, Inc.",
+		     "vbot",
+		     "vbot",
+		     "1.0",
+		     "http://www.android.com",
+		     "0000000012345678");
+boolean isAccessoryConnected = false;
 
 void setup()
 {
@@ -18,6 +33,8 @@ void setup()
     servo[i].attach(servo_pin[i]);       // Attach the Servos on to the respective pins
 
   stand_up();    // Make the QuadBot Stand up before doing any action
+  
+  acc.powerOn();
 }
 
 void loop()
@@ -26,6 +43,13 @@ void loop()
   {
     action();
     irrecv.resume();                     // Receive the next value
+  }
+  
+  if (!isAccessoryConnected) {
+    isAccessoryConnected = acc.isConnected();
+  } else {
+    msg_len = acc.read(msg, sizeof(msg), 1);
+    action();
   }
 }
 
@@ -75,6 +99,33 @@ void action()
     stretch();
     stretch();
     break;
+  }
+  
+  if (msg_len > 0) {
+    Serial.println(msg[0]);
+    switch(msg[0]) {
+      case 0: 
+        stand_up();
+        break;
+      case 1:
+        forward();
+        break;
+     case 2:
+        backward();
+        break;
+     case 3:
+        step_left();
+        break;
+     case 4:
+        step_right();
+        break;
+     case 5:
+        stretch();
+        break;
+     case 6:
+        dance();
+        break;
+    } 
   }
 }
 
@@ -442,6 +493,101 @@ void stretch()
     delay(stretch_delay_time); 
   }
   delay(500);
+}
+
+void dance()
+{
+  for(int i=0;i< 2*displacement;i++)        // Stretch the front left leg
+  {                                      
+    move_servo(0,-1);
+    delay(dance_delay_time);
+  }
+  delay(500);
+  for(int i=0;i< displacement;i++)        
+  {                                      
+    move_servo(4, -2);
+    delay(dance_delay_time);
+  }
+  delay(100);
+  for(int i=0;i< displacement;i++)        
+  {                                      
+    move_servo(4, +2);
+    delay(dance_delay_time);
+  }
+  for(int i=0;i< displacement;i++)        
+  {                                      
+    move_servo(4, -2);
+    delay(dance_delay_time);
+  }
+  delay(100);
+  for(int i=0;i< displacement;i++)        
+  {                                      
+    move_servo(4, +2);
+    delay(dance_delay_time);
+  }
+  for(int i=0;i< displacement;i++)        
+  {                                      
+    move_servo(4, -2);
+    delay(dance_delay_time);
+  }
+  delay(100);
+  for(int i=0;i< displacement;i++)        
+  {                                      
+    move_servo(4, +2);
+    delay(dance_delay_time);
+  }
+  delay(500);
+  for(int i=0;i< 2*displacement;i++)        // Bringing back the front left leg
+  {                                      
+    move_servo(0,+1);
+    delay(dance_delay_time);
+  }
+  
+  for(int i=0;i< 2*displacement;i++)        // Stretch the front right leg
+  {                                      
+    move_servo(1,-1);
+    delay(dance_delay_time);
+  }
+  delay(500);
+  for(int i=0;i< displacement;i++)        
+  {                                      
+    move_servo(5, +2);
+    delay(dance_delay_time);
+  }
+  delay(100);
+  for(int i=0;i< displacement;i++)        
+  {                                      
+    move_servo(5, -2);
+    delay(dance_delay_time);
+  }
+  for(int i=0;i< displacement;i++)        
+  {                                      
+    move_servo(5, +2);
+    delay(dance_delay_time);
+  }
+  delay(100);
+  for(int i=0;i< displacement;i++)        
+  {                                      
+    move_servo(5, -2);
+    delay(dance_delay_time);
+  }
+  for(int i=0;i< displacement;i++)        
+  {                                      
+    move_servo(5, +2);
+    delay(dance_delay_time);
+  }
+  delay(100);
+  for(int i=0;i< displacement;i++)        
+  {                                      
+    move_servo(5, -2);
+    delay(dance_delay_time);
+  }
+  delay(500);
+  for(int i=0;i< 2*displacement;i++)        // Bringing back the front right leg
+  {                                      
+    move_servo(1,+1);
+    delay(dance_delay_time);
+  }
 }
 
 void move_servo(int x,int y)

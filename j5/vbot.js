@@ -60,12 +60,13 @@ function moveServo(index, angle) {
   servos[index].move(currentPosition[index]);
 }
 
+// TODO: Get rid of this delay
 function sleep(ms) {
   var then = new Date(), now = new Date();
 
-  /*while (now - then < ms) {
+  while (now - then < ms) {
     now = new Date();
-  }*/
+  }
 }
 
 // Actions

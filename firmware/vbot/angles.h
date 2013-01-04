@@ -6,6 +6,8 @@ int delay_time=5;       // Time delay between displacement of every angle
 int stretch_displacement=40;
 int stretch_delay_time=20;
 
+int dance_delay_time=5;
+
 // Angles for the QuadBot to stand up 
 
 int stand_position[8]={ 
