@@ -2,7 +2,7 @@ VBot - Arduino based Quadbot
 ============================
 VBot is an Arduino based Quadbot which can walk, stretch and even dance. Watch it in action [here](http://www.youtube.com/watch?v=lD_z1iR0yf0). This repo contains the firmware and the controller code of VBot. 
 
-Blog post: [http://blog.varunkumar.me](http://blog.varunkumar.me)
+Blog post: [http://blog.varunkumar.me/2013/01/vbot-arduino-based-quadbot.html](http://blog.varunkumar.me/2013/01/vbot-arduino-based-quadbot.html)
 
 Modules
 -------
@@ -18,7 +18,7 @@ Modules
 ###Node.js + Johnny-Five
 - JavaScript port of the firmware.
 - Uses Node module 'Johnny-Five' which uses Firmata protocol for communicating with the Arduino board.
-- The bot can be controlled form the REPL interface. Available methods: moveForward(), moveBackward(), moveLeft(), moveRight(), standUp(), stretch().
+- The bot can be controlled from the REPL interface. Available methods: moveForward(), moveBackward(), moveLeft(), moveRight(), standUp(), stretch().
 
 Requirements
 ------------
@@ -35,4 +35,4 @@ The source code is available [here](https://github.com/varunkumar/vbot) under MI
 
 -- [Varun](http://www.varunkumar.me)
 
-Last Modified: Fri Jan 04 23:25:36 IST 2013
+Last Modified: Fri Jan 05 01:08:36 IST 2013
