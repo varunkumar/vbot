@@ -1,19 +1,22 @@
 var five = require("johnny-five"),
-    board, servos;
+    board, servos, sensors = {}, ledValue = 0;;
 
 var pins = [
   2,11,13,4,      //Knee servos' pins in the order of   Left Front, Right Front, Right Rear, Left Rear
-  3,10,6,5        //hip servos' pins in the order of   Left Front, Right Front, Right Rear, Left Rear
+  3,10,6,5,
+  9, 12        //hip servos' pins in the order of   Left Front, Right Front, Right Rear, Left Rear
 ];
 
 var standPosition = [
   160,115,120,140,      // Knee servo angles in the order of   Left Front, Right Front, Right Rear, Left Rear
-  100,70,90,90          // Hip servo angles  in the order of  Left Front, Right Front, Right Rear, Left Rear
+  100,70,90,90,
+  40, 90          // Hip servo angles  in the order of  Left Front, Right Front, Right Rear, Left Rear
 ];
 
 var currentPosition = [
   160,115,120,140,
-  100,70,90,90
+  100,70,90,90,
+  40,90
 ];
 
 var displacement = 30;    // Displacement angle of every step
@@ -46,6 +49,27 @@ board.on("ready", function() {
     "servos": servos
   });
 
+  this.pinMode(36, 1);
+  IREye();
+
+  this.loop(100, function() {
+    board.digitalWrite( 36, ledValue = (ledValue ? 0 : 1));
+    var distance = (sensors['left'].value + sensors['right'].value + sensors['up'].value + sensors['down'].value) / 4;
+
+    //console.log(distance);
+    if (distance > 300) {
+      shakeHead();
+      moveBackward();
+      moveForward();
+      /*console.log("------------------------------------------------");
+      console.log("Left: " + sensors['left'].value);
+      console.log("Right: " + sensors['right'].value);
+      console.log("Up: " + sensors['up'].value);
+      console.log("Down: " + sensors['down'].value);
+      console.log("------------------------------------------------");*/
+    }
+  })
+
   // Adding logs
   servos.each(function( servo, index ) {
     servo.on("move", function( err, degrees ) {
@@ -54,6 +78,47 @@ board.on("ready", function() {
   });
 
 });
+
+function readSensor(s) {
+  var sensor = s.sensor;
+  s.sensorFlag = 1;
+  sensor.on("read", function( err, value ) {
+    //console.log(ledValue);
+    if (s.sensorFlag)
+      s.value = this.value;
+    else
+      s.value -= this.value;
+
+    s.sensorFlag = (s.sensorFlag ? 0 : 1);
+  });
+}
+
+function IREye() {
+  sensors['left'] = {value: 0, sensor: new five.Sensor({
+    pin: "A8",
+    freq: 50
+  })};
+
+  sensors['right'] = {value: 0, sensor: new five.Sensor({
+    pin: "A15",
+    freq: 50
+  })};
+
+  sensors['up'] = {value: 0, sensor: new five.Sensor({
+    pin: "A5",
+    freq: 50
+  })};
+
+  sensors['down'] = {value: 0, sensor: new five.Sensor({
+    pin: "A14",
+    freq: 50
+  })};
+
+  for (var k in sensors) {
+    var sensor = sensors[k].sensor;
+    readSensor(sensors[k]);
+  }
+}
 
 function moveServo(index, angle) {
   currentPosition[index] += angle;
@@ -64,9 +129,9 @@ function moveServo(index, angle) {
 function sleep(ms) {
   var then = new Date(), now = new Date();
 
-  while (now - then < ms) {
+  /*while (now - then < ms) {
     now = new Date();
-  }
+  }*/
 }
 
 // Actions
@@ -77,8 +142,26 @@ function standUp() {
   });
 }
 
+function shakeHead() {
+  for (i = 0; i < 45; i++) {
+    moveServo(9, +1);
+  }
+
+  for (i = 0; i < 90; i++) {
+    moveServo(9, -1);
+  }  
+
+  for (i = 0; i < 45; i++) {
+    moveServo(9, +1);
+  }
+}
+
 function moveForward() {
   var i = 0;
+
+  for (i = 0; i < 45; i++) {
+    moveServo(9, +1);
+  }
 
   for(i = 0; i < displacement; i++) {     // Raise the Left Front and Right Rear legs
     moveServo(0, -1);
@@ -96,6 +179,10 @@ function moveForward() {
     moveServo(0, +1);
     moveServo(2, +1);
     sleep(delayTime);
+  }
+
+  for (i = 0; i < 90; i++) {
+    moveServo(9, -1);
   }
 
   for(i = 0; i < displacement; i++) {       // Move the Left Front and Right Rear legs back & Raise the Right Front and Left Rear legs
@@ -122,6 +209,10 @@ function moveForward() {
     moveServo(5, +1);
     moveServo(7, -1);
     sleep(delayTime);
+  }
+
+  for (i = 0; i < 45; i++) {
+    moveServo(9, +1);
   }
 }
 
